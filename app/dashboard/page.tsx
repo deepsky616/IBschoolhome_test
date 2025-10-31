@@ -98,6 +98,13 @@ export default function DashboardPage() {
       
       const result = await response.json()
       
+      console.log('Analysis result received:', {
+        totalItems: result.totalItems,
+        validItems: result.validItems,
+        itemsCount: result.items?.length,
+        firstItemErrors: result.items?.[0]?.errors?.length
+      })
+      
       setAnalysisResult(result)
     } catch (error: any) {
       console.error('Analysis error:', error)

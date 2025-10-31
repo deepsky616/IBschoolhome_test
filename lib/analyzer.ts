@@ -104,9 +104,11 @@ export function analyzeEvaluationPlan(items: AnalysisItem[]): {
   validItems: number
   items: AnalysisItem[]
 } {
+  console.log('[Analyzer] Starting analysis for', items.length, 'items')
   let validCount = 0
   
-  const analyzedItems = items.map(item => {
+  const analyzedItems = items.map((item, index) => {
+    console.log(`[Analyzer] Analyzing item ${index + 1}:`, item.교과)
     const errors: Array<any> = []
     
     // 1. 교과명 검증
@@ -183,8 +185,11 @@ export function analyzeEvaluationPlan(items: AnalysisItem[]): {
       })
     } else {
       const criteriaErrors = validateEvaluationCriteria(item.평가기준)
+      console.log(`[Analyzer] Criteria errors for ${item.교과}:`, criteriaErrors.length)
       errors.push(...criteriaErrors)
     }
+    
+    console.log(`[Analyzer] Total errors for ${item.교과}:`, errors.length)
     
     if (errors.length === 0) {
       validCount++

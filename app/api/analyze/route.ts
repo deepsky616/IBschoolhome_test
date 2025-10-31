@@ -17,11 +17,13 @@ export async function POST(request: NextRequest) {
     const fileName = file.name.toLowerCase()
     const isSupported = fileName.endsWith('.docx') || 
                        fileName.endsWith('.pdf') || 
-                       fileName.endsWith('.hwp')
+                       fileName.endsWith('.hwp') ||
+                       fileName.endsWith('.json') ||
+                       fileName.endsWith('.txt')
     
     if (!isSupported) {
       return NextResponse.json(
-        { error: '지원하지 않는 파일 형식입니다. docx, pdf, hwp만 지원됩니다.' },
+        { error: '지원하지 않는 파일 형식입니다. docx, pdf, hwp, json, txt 파일만 지원됩니다.' },
         { status: 400 }
       )
     }
@@ -53,7 +55,16 @@ export async function POST(request: NextRequest) {
     }
 
     // 분석 수행
+    console.log('Parsed data count:', parsedData.length)
+    console.log('Sample item:', JSON.stringify(parsedData[0], null, 2))
+    
     const result = analyzeEvaluationPlan(parsedData)
+    
+    console.log('Analysis result:', {
+      totalItems: result.totalItems,
+      validItems: result.validItems,
+      firstItemErrors: result.items[0]?.errors?.length || 0
+    })
 
     return NextResponse.json(result)
   } catch (error: any) {
