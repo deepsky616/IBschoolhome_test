@@ -107,10 +107,24 @@ export default function DashboardPage() {
       
       setAnalysisResult(result)
     } catch (error: any) {
-      console.error('Analysis error:', error)
-      alert(error.message || '분석 중 오류가 발생했습니다')
+      console.error('❌ Analysis error:', error)
       
-      // 에러 발생 시 샘플 데이터 표시 (개발용)
+      // 더 자세한 에러 메시지 표시
+      let errorMessage = '분석 중 오류가 발생했습니다';
+      
+      if (error.message.includes('404')) {
+        errorMessage = 'API 서버를 찾을 수 없습니다. 개발 서버를 재시작해주세요.\n\n해결 방법:\n1. 터미널에서 Ctrl+C로 서버 중지\n2. npm run dev 로 재시작\n3. 브라우저 새로고침';
+      } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+        errorMessage = '서버 연결에 실패했습니다. 개발 서버가 실행 중인지 확인해주세요.';
+      } else {
+        errorMessage = error.message || '분석 중 오류가 발생했습니다';
+      }
+      
+      alert(errorMessage)
+      setAnalysisResult(null)
+      
+      // 더미 데이터 제거 - 에러 발생 시 아무것도 표시하지 않음
+      /*
       setAnalysisResult({
         success: true,
         totalItems: 5,
@@ -214,6 +228,7 @@ export default function DashboardPage() {
           }
         ]
       })
+      */
     } finally {
       setAnalyzing(false)
     }

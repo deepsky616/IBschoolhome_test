@@ -195,10 +195,20 @@ export function analyzeEvaluationPlan(items: AnalysisItem[]): {
       validCount++
     }
     
-    return {
+    // 행번호 추가 (없는 경우)
+    const itemWithRow = {
       ...item,
+      행번호: item.행번호 || index + 1,
       errors
     }
+    
+    return itemWithRow
+  })
+  
+  console.log('[Analyzer] Analysis complete:', {
+    totalItems: items.length,
+    validItems: validCount,
+    errorItems: items.length - validCount
   })
   
   return {
