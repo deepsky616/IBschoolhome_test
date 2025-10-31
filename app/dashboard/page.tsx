@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<any>(null)
+  const [errorFilter, setErrorFilter] = useState<string>("all")
 
   const handleLogout = () => {
     // TODO: 실제 로그아웃 로직
@@ -88,14 +89,104 @@ export default function DashboardPage() {
     setTimeout(() => {
       setAnalysisResult({
         success: true,
-        교과: "국어",
-        성취기준: "[4국01-05]",
-        errors: [
+        totalItems: 5,
+        validItems: 2,
+        items: [
           {
-            type: "warning",
-            field: "평가기준",
-            message: "'매우잘함' 항목이 누락되었습니다",
-            suggestion: "4단계 평가기준을 모두 작성해주세요"
+            행번호: 1,
+            교과: "국어",
+            성취기준: "[4국01-05]",
+            단원명: "독서단원 - 읽은 책을 소개해요",
+            평가영역: "듣기·말하기",
+            평가요소: "발표하기",
+            평가기준: {
+              매우잘함: "목적과 주제에 매우 적절한 자료를 선정하여 체계적으로 구성하고 자신감 있게 발표함",
+              잘함: "목적과 주제에 적절한 자료를 선정하여 발표함",
+              보통: "자료를 선정하여 발표하나 다소 미흡함",
+              노력요함: ""
+            },
+            errors: [
+              {
+                type: "error",
+                field: "평가기준 - 노력요함",
+                message: "'노력요함' 항목이 누락되었습니다",
+                suggestion: "4단계 평가기준을 모두 작성해주세요"
+              }
+            ]
+          },
+          {
+            행번호: 2,
+            교과: "수학",
+            성취기준: "[4수01-01]",
+            단원명: "큰 수",
+            평가영역: "수와 연산",
+            평가요소: "큰 수의 이해",
+            평가기준: {
+              매우잘함: "다섯 자리 이상의 수를 정확히 이해하고 실생활에 활용 가능",
+              잘함: "다섯 자리 이상의 수를 이해하고 어림 가능",
+              보통: "다섯 자리 이상의 수를 이해함",
+              노력요함: "다섯 자리 이상의 수 이해에 어려움이 있음"
+            },
+            errors: []
+          },
+          {
+            행번호: 3,
+            교과: "영어",
+            성취기준: "[6영01-05]",
+            단원명: "Lesson 3",
+            평가영역: "이해",
+            평가요소: "듣기",
+            평가기준: {
+              매우잘함: "주변의 사물에 대한 간단한 묘사를 듣고 완전히 이해함",
+              잘함: "주변의 사물에 대한 간단한 묘사를 듣고 대체로 이해함",
+              보통: "",
+              노력요함: "묘사를 듣고 이해하는 데 어려움이 있음"
+            },
+            errors: [
+              {
+                type: "error",
+                field: "평가기준 - 보통",
+                message: "'보통' 항목이 누락되었습니다",
+                suggestion: "4단계 평가기준을 모두 작성해주세요"
+              }
+            ]
+          },
+          {
+            행번호: 4,
+            교과: "사회",
+            성취기준: "[4사XX-XX]",
+            단원명: "우리 지역",
+            평가영역: "지리",
+            평가요소: "지역 이해",
+            평가기준: {
+              매우잘함: "우리 지역의 특성을 완벽히 설명",
+              잘함: "우리 지역의 특성을 설명",
+              보통: "우리 지역의 특성을 부분적으로 설명",
+              노력요함: "우리 지역의 특성 설명에 어려움"
+            },
+            errors: [
+              {
+                type: "error",
+                field: "성취기준",
+                message: "올바르지 않은 성취기준 형식입니다",
+                suggestion: "2022 개정 교육과정 성취기준 형식을 확인해주세요 (예: [4사01-01])"
+              }
+            ]
+          },
+          {
+            행번호: 5,
+            교과: "과학",
+            성취기준: "[4과01-01]",
+            단원명: "무게",
+            평가영역: "물질과 에너지",
+            평가요소: "무게 측정",
+            평가기준: {
+              매우잘함: "물체의 무게를 정확하게 측정하고 용수철의 원리를 완벽히 설명",
+              잘함: "물체의 무게를 측정하고 용수철의 원리를 설명",
+              보통: "물체의 무게를 측정할 수 있음",
+              노력요함: "무게 측정에 어려움이 있음"
+            },
+            errors: []
           }
         ]
       })
@@ -275,59 +366,202 @@ export default function DashboardPage() {
 
         {/* Analysis Results Section */}
         {analysisResult && (
-          <Card>
-            <CardHeader>
-              <CardTitle>분석 결과</CardTitle>
-              <CardDescription>
-                2022 개정 교육과정 성취기준 기반 분석 결과입니다
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-xs text-gray-600">교과</Label>
-                  <p className="font-medium">{analysisResult.교과}</p>
+          <div className="space-y-6">
+            {/* Summary Statistics */}
+            <Card>
+              <CardHeader>
+                <CardTitle>분석 결과 요약</CardTitle>
+                <CardDescription>
+                  2022 개정 교육과정 성취기준 기반 분석
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-3xl font-bold text-blue-600">
+                      {analysisResult.totalItems}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">전체 항목</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-3xl font-bold text-green-600">
+                      {analysisResult.validItems}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">정상 항목</div>
+                  </div>
+                  <div className="text-center p-4 bg-red-50 rounded-lg">
+                    <div className="text-3xl font-bold text-red-600">
+                      {analysisResult.totalItems - analysisResult.validItems}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">오류 항목</div>
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs text-gray-600">성취기준</Label>
-                  <p className="font-medium">{analysisResult.성취기준}</p>
-                </div>
-              </div>
+              </CardContent>
+            </Card>
 
-              {analysisResult.errors && analysisResult.errors.length > 0 && (
-                <div className="space-y-3">
-                  <Label className="text-sm font-semibold">발견된 문제점</Label>
-                  {analysisResult.errors.map((error: any, index: number) => (
-                    <div 
-                      key={index}
-                      className="flex gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
+            {/* Filter Options */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4">
+                  <Label>필터:</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={errorFilter === "all" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setErrorFilter("all")}
                     >
-                      <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="font-medium text-sm text-yellow-900">
-                          {error.field}: {error.message}
-                        </p>
-                        {error.suggestion && (
-                          <p className="text-xs text-yellow-700 mt-1">
-                            💡 제안: {error.suggestion}
-                          </p>
+                      전체 ({analysisResult.totalItems})
+                    </Button>
+                    <Button
+                      variant={errorFilter === "error" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setErrorFilter("error")}
+                    >
+                      오류만 ({analysisResult.totalItems - analysisResult.validItems})
+                    </Button>
+                    <Button
+                      variant={errorFilter === "valid" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setErrorFilter("valid")}
+                    >
+                      정상만 ({analysisResult.validItems})
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Results Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>상세 분석 결과</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {analysisResult.items
+                    .filter((item: any) => {
+                      if (errorFilter === "error") return item.errors.length > 0
+                      if (errorFilter === "valid") return item.errors.length === 0
+                      return true
+                    })
+                    .map((item: any, index: number) => (
+                      <div
+                        key={index}
+                        className={`border rounded-lg p-4 ${
+                          item.errors.length > 0
+                            ? "border-red-200 bg-red-50"
+                            : "border-green-200 bg-green-50"
+                        }`}
+                      >
+                        {/* Header */}
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="font-mono">
+                              #{item.행번호}
+                            </Badge>
+                            <div>
+                              <div className="font-semibold text-lg">
+                                {item.교과} - {item.단원명}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {item.성취기준}
+                              </div>
+                            </div>
+                          </div>
+                          {item.errors.length === 0 ? (
+                            <Badge variant="default" className="bg-green-600">
+                              <CheckCircle2 className="h-3 w-3 mr-1" />
+                              정상
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              오류 {item.errors.length}개
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Details Grid */}
+                        <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                          <div>
+                            <span className="text-gray-600">평가영역:</span>{" "}
+                            <span className="font-medium">{item.평가영역}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">평가요소:</span>{" "}
+                            <span className="font-medium">{item.평가요소}</span>
+                          </div>
+                        </div>
+
+                        {/* Evaluation Criteria */}
+                        <div className="mb-3">
+                          <Label className="text-xs text-gray-600 mb-2 block">
+                            평가기준
+                          </Label>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            {Object.entries(item.평가기준).map(([level, desc]: [string, any]) => (
+                              <div
+                                key={level}
+                                className={`p-2 rounded border ${
+                                  desc === ""
+                                    ? "bg-red-100 border-red-300"
+                                    : "bg-white border-gray-200"
+                                }`}
+                              >
+                                <div className="font-semibold text-xs text-gray-700 mb-1">
+                                  {level}
+                                </div>
+                                <div className="text-gray-600">
+                                  {desc || (
+                                    <span className="text-red-600 italic">
+                                      (누락됨)
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Errors */}
+                        {item.errors.length > 0 && (
+                          <div className="space-y-2">
+                            {item.errors.map((error: any, errIndex: number) => (
+                              <div
+                                key={errIndex}
+                                className="flex gap-2 p-3 bg-white border border-red-300 rounded"
+                              >
+                                <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                  <div className="font-medium text-sm text-red-900">
+                                    {error.field}: {error.message}
+                                  </div>
+                                  {error.suggestion && (
+                                    <div className="text-xs text-red-700 mt-1">
+                                      💡 {error.suggestion}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         )}
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
-              )}
 
-              {analysisResult.errors.length === 0 && (
-                <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <p className="text-sm text-green-900 font-medium">
-                    오류가 발견되지 않았습니다! 평가계획이 올바르게 작성되었습니다.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                {analysisResult.items.filter((item: any) => {
+                  if (errorFilter === "error") return item.errors.length > 0
+                  if (errorFilter === "valid") return item.errors.length === 0
+                  return true
+                }).length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    필터 조건에 맞는 결과가 없습니다.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         )}
       </main>
     </div>
