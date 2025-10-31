@@ -77,16 +77,33 @@ export default function DashboardPage() {
       alert("파일을 먼저 업로드해주세요")
       return
     }
-    
-    if (!apiKeySaved) {
-      alert("Gemini API 키를 먼저 저장해주세요")
-      return
-    }
 
     setAnalyzing(true)
     
-    // TODO: 실제 분석 로직
-    setTimeout(() => {
+    try {
+      // FormData 생성
+      const formData = new FormData()
+      formData.append('file', uploadedFile)
+      
+      // API 호출
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || '분석 중 오류가 발생했습니다')
+      }
+      
+      const result = await response.json()
+      
+      setAnalysisResult(result)
+    } catch (error: any) {
+      console.error('Analysis error:', error)
+      alert(error.message || '분석 중 오류가 발생했습니다')
+      
+      // 에러 발생 시 샘플 데이터 표시 (개발용)
       setAnalysisResult({
         success: true,
         totalItems: 5,
@@ -190,8 +207,9 @@ export default function DashboardPage() {
           }
         ]
       })
+    } finally {
       setAnalyzing(false)
-    }, 2000)
+    }
   }
 
   return (
